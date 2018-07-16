@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ungear/barmaid-api#readme",
   "dependencies": {
     "axios": "^0.18.0",
-    "mongo": "^0.1.0"
+    "mongo": "^0.1.0",
+    "mongoose": "^5.2.3"
   }
 }
