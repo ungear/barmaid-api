@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const DrinkScheme = new Schema({
   name: String,
-  _id: Number,
+  id: Number,
 })
 const Drink = mongoose.model("drinks", DrinkScheme);
 
@@ -15,12 +15,24 @@ exports.upsertDrinks = function(drinks){
   let upsertPromises = drinks.map(drinkData => {
     let drink = {
       name: drinkData.strDrink,
-      _id: drinkData.idDrink,
+      id: drinkData.idDrink,
     }
-    return Drink.update({_id: drink._id}, drink, {upsert: true})
+    return Drink.update({id: drink.id}, drink, {upsert: true})
   })
 
   return Promise.all(upsertPromises)
     .then(_ => {debugger; mongoose.disconnect()})
     .catch(e => {debugger; mongoose.disconnect()})
+}
+
+exports.getDrinkNames = function(){
+  mongoose.connect(dbUrl,{ useNewUrlParser: true });
+  return Drink.find({}, "name")
+    .exec()
+    .then(results => { 
+      mongoose.disconnect(); 
+      return results.map(x => x.name);})
+    .catch(e => {
+      mongoose.disconnect()
+    })
 }
