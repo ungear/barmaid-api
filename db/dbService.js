@@ -25,9 +25,13 @@ exports.upsertDrinks = function(drinks){
     .catch(e => {debugger; mongoose.disconnect()})
 }
 
-exports.getDrinkNames = function(){
+exports.getDrinkNames = function({like}){
   mongoose.connect(dbUrl,{ useNewUrlParser: true });
-  return Drink.find({}, "name")
+  let query = like
+    ? Drink.find({name: new RegExp(like, "i")}, "name")
+    : Drink.find({}, "name")
+    
+  return query
     .exec()
     .then(results => { 
       mongoose.disconnect(); 
