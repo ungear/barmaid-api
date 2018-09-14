@@ -9,6 +9,7 @@ const TARGET_URLS = {
   getAllNonAlcoholic: [TARGET_API_BASE_URL, API_KEY, "filter.php?a=Non_Alcoholic"].join("/"),
   getAllOptionalAlcoholic: [TARGET_API_BASE_URL, API_KEY, "filter.php?a=Optional_alcohol"].join("/"),
   getDrinkById: (id) => `${TARGET_API_BASE_URL}/${API_KEY}/lookup.php?i=${id}`,
+  getAllIngredients: [TARGET_API_BASE_URL, API_KEY, "list.php?i=list"].join("/"),
 }
 
 // get drinks short data {id, name, thumbURL}
@@ -28,6 +29,12 @@ exports.getAllDrinksFullData = async function() {
     allDrinks.push(drinkData);
   }
   return allDrinks;
+};
+
+exports.getAllIngredients = function() {
+  return axios
+    .get(TARGET_URLS.getAllIngredients)
+    .then(resp => resp.data.drinks);
 };
 
 function getAllDrinkIds() {

@@ -13,12 +13,16 @@ const DrinkScheme = new Schema({
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
 
+const IngredientScheme = new Schema({
+  ingredientName: String
+});
+const Ingredient = mongoose.model("ingredients", IngredientScheme);
+
 exports.upsertDrinks = function(drinks) {
   mongoose.connect(
     dbUrl,
     { useNewUrlParser: true }
   );
-  console.log(drinks);
   let upsertPromises = drinks.map(drinkData => {
     let drink = {
       name: drinkData.strDrink,
@@ -56,6 +60,31 @@ exports.getDrinkNames = function({ like }) {
     .then(results => {
       mongoose.disconnect();
       return results.map(x => x.name);
+    })
+    .catch(e => {
+      mongoose.disconnect();
+    });
+};
+
+exports.upsertIngredients = function(ingredients) {
+  mongoose.connect(
+    dbUrl,
+    { useNewUrlParser: true }
+  );
+  let upsertPromises = ingredients.map(ingData => {
+    let ingredient = {
+      ingredientName: ingData.strIngredient1
+    };
+    return Ingredient.update(
+      { ingredientName: ingredient.ingredientName },
+      ingredient,
+      { upsert: true }
+    );
+  });
+
+  return Promise.all(upsertPromises)
+    .then(_ => {
+      mongoose.disconnect();
     })
     .catch(e => {
       mongoose.disconnect();
