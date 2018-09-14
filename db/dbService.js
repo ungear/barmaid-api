@@ -3,11 +3,6 @@ const mongoose = require("mongoose");
 const dbUrl = require("./dbConfig.js").DB_URL;
 const Schema = mongoose.Schema;
 
-const DrinkIngredient = new Schema({
-  ingredientName: String,
-  measure: String
-});
-
 const DrinkScheme = new Schema({
   name: String,
   id: Number,
@@ -17,7 +12,7 @@ const DrinkScheme = new Schema({
   instructions: String,
   ingredients: {
     type: Map,
-    of: DrinkIngredient
+    of: String
   }
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
@@ -35,16 +30,10 @@ exports.upsertDrinks = function(drinks) {
   let upsertPromises = drinks.map(drinkData => {
     let ings = {};
     if (drinkData.strIngredient1) {
-      ings["1"] = {
-        ingredientName: drinkData.strIngredient1,
-        measure: drinkData.strMeasure1
-      };
+      ings[drinkData.strIngredient1] = drinkData.strMeasure1;
     }
     if (drinkData.strIngredient2) {
-      ings["2"] = {
-        ingredientName: drinkData.strIngredient2,
-        measure: drinkData.strMeasure2
-      };
+      ings[drinkData.strIngredient2] = drinkData.strMeasure2;
     }
     let drink = {
       name: drinkData.strDrink,
