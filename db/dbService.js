@@ -6,7 +6,10 @@ const Schema = mongoose.Schema;
 const DrinkScheme = new Schema({
   name: String,
   id: Number,
-  thumbImageUrl: String
+  thumbImageUrl: String,
+  alcType: String,
+  glass: String,
+  instructions: String
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
 
@@ -20,7 +23,10 @@ exports.upsertDrinks = function(drinks) {
     let drink = {
       name: drinkData.strDrink,
       id: drinkData.idDrink,
-      thumbImageUrl: drinkData.strDrinkThumb
+      thumbImageUrl: drinkData.strDrinkThumb,
+      alcType: drinkData.strAlcoholic,
+      glass: drinkData.strGlass,
+      instructions: drinkData.strInstructions
     };
     return Drink.update({ id: drink.id }, drink, { upsert: true });
   });

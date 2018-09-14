@@ -11,6 +11,7 @@ const TARGET_URLS = {
   getDrinkById: (id) => `${TARGET_API_BASE_URL}/${API_KEY}/lookup.php?i=${id}`,
 }
 
+// get drinks short data {id, name, thumbURL}
 exports.getAllDrinks = function() {
   return Promise.all([
     axios.get(TARGET_URLS.getAllAlcoholic),
@@ -21,7 +22,7 @@ exports.getAllDrinks = function() {
 
 exports.getAllDrinksFullData = async function() {
   let allDrinkIds = await getAllDrinkIds();
-  let loader = asyncDrinkGenerator(allDrinkIds);
+  let loader = asyncDrinkGenerator([allDrinkIds[0]]);
   let allDrinks = [];
   for await (let drinkData of loader) {
     allDrinks.push(drinkData);

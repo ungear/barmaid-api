@@ -1,6 +1,4 @@
-const grabber = require("./grabber/grabber.js")
+const grabber = require("./grabber/grabber.js");
 const dbService = require("./db/dbService.js");
 
-grabber.getAllDrinks().then(data => 
-  dbService.upsertDrinks(data)
-)
+grabber.getAllDrinksFullData().then(data => dbService.upsertDrinks(data));
