@@ -3,13 +3,22 @@ const mongoose = require("mongoose");
 const dbUrl = require("./dbConfig.js").DB_URL;
 const Schema = mongoose.Schema;
 
+const DrinkIngredient = new Schema({
+  ingredientName: String,
+  measure: String
+});
+
 const DrinkScheme = new Schema({
   name: String,
   id: Number,
   thumbImageUrl: String,
   alcType: String,
   glass: String,
-  instructions: String
+  instructions: String,
+  ingredients: {
+    type: Map,
+    of: DrinkIngredient
+  }
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
 
@@ -24,13 +33,27 @@ exports.upsertDrinks = function(drinks) {
     { useNewUrlParser: true }
   );
   let upsertPromises = drinks.map(drinkData => {
+    let ings = {};
+    if (drinkData.strIngredient1) {
+      ings["1"] = {
+        ingredientName: drinkData.strIngredient1,
+        measure: drinkData.strMeasure1
+      };
+    }
+    if (drinkData.strIngredient2) {
+      ings["2"] = {
+        ingredientName: drinkData.strIngredient2,
+        measure: drinkData.strMeasure2
+      };
+    }
     let drink = {
       name: drinkData.strDrink,
       id: drinkData.idDrink,
       thumbImageUrl: drinkData.strDrinkThumb,
       alcType: drinkData.strAlcoholic,
       glass: drinkData.strGlass,
-      instructions: drinkData.strInstructions
+      instructions: drinkData.strInstructions,
+      ingredients: ings
     };
     return Drink.update({ id: drink.id }, drink, { upsert: true });
   });
@@ -41,7 +64,7 @@ exports.upsertDrinks = function(drinks) {
       mongoose.disconnect();
     })
     .catch(e => {
-      debugger;
+      console.error(e);
       mongoose.disconnect();
     });
 };
