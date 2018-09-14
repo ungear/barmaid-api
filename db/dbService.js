@@ -29,9 +29,13 @@ exports.upsertDrinks = function(drinks) {
   );
   let upsertPromises = drinks.map(drinkData => {
     let ings = {};
-    if (drinkData.strIngredient1) {
-      ings[drinkData.strIngredient1] = drinkData.strMeasure1;
+    for (let index = 1; index <= 15; index++) {
+      let ingName = drinkData["strIngredient" + index];
+      if (ingName) {
+        ings[ingName] = drinkData["strMeasure" + index];
+      }
     }
+
     if (drinkData.strIngredient2) {
       ings[drinkData.strIngredient2] = drinkData.strMeasure2;
     }

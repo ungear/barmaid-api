@@ -23,7 +23,7 @@ exports.getAllDrinks = function() {
 
 exports.getAllDrinksFullData = async function() {
   let allDrinkIds = await getAllDrinkIds();
-  let loader = asyncDrinkGenerator([allDrinkIds[0]]);
+  let loader = asyncDrinkGenerator(allDrinkIds);
   let allDrinks = [];
   for await (let drinkData of loader) {
     allDrinks.push(drinkData);
