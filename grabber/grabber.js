@@ -25,8 +25,9 @@ exports.getAllDrinksFullData = async function() {
   let allDrinkIds = await getAllDrinkIds();
   let loader = asyncDrinkGenerator(allDrinkIds);
   let allDrinks = [];
-  for await (let drinkData of loader) {
-    allDrinks.push(drinkData);
+  for await (let x of loader) {
+    if (x.success) allDrinks.push(x.data);
+    else console.log(x.error);
   }
   return allDrinks;
 };
@@ -52,6 +53,11 @@ function getAllDrinkIds() {
 async function* asyncDrinkGenerator(ids) {
   while (ids.length) {
     let drinkUrl = TARGET_URLS.getDrinkById(ids.pop());
-    yield await axios.get(drinkUrl).then(response => response.data.drinks[0]);
+    yield await axios
+      .get(drinkUrl)
+      .then(
+        response => ({ success: true, data: response.data.drinks[0] }),
+        e => ({ success: false, error: e })
+      );
   }
 }

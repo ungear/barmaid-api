@@ -4,16 +4,23 @@ const dbUrl = require("./dbConfig.js").DB_URL;
 const Schema = mongoose.Schema;
 
 const DrinkScheme = new Schema({
+  //id: ObjectId,
   name: String,
   id: Number,
   thumbImageUrl: String,
   alcType: String,
   glass: String,
   instructions: String,
-  ingredients: {
-    type: Map,
-    of: String
-  }
+  ingredients: [
+    new Schema({
+      ingId: { type: mongoose.Schema.ObjectId, ref: "ingredients" },
+      measure: String
+    })
+  ]
+  // ingredients: {
+  //   type: Map,
+  //   of: String
+  // }
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
 
@@ -22,22 +29,28 @@ const IngredientScheme = new Schema({
 });
 const Ingredient = mongoose.model("ingredients", IngredientScheme);
 
-exports.upsertDrinks = function(drinks) {
+exports.upsertDrinks = async function(drinks) {
   mongoose.connect(
     dbUrl,
     { useNewUrlParser: true }
   );
+  let allIngredients = await Ingredient.find({});
   let upsertPromises = drinks.map(drinkData => {
-    let ings = {};
+    let ings = [];
     for (let index = 1; index <= 15; index++) {
       let ingName = drinkData["strIngredient" + index];
       if (ingName) {
-        ings[ingName] = drinkData["strMeasure" + index];
+        let existingInredient = allIngredients.find(
+          x => x.ingredientName === ingName
+        );
+        if (existingInredient) {
+          let ingId = allIngredients.find(x => x.ingredientName === ingName)
+            ._id;
+          ings.push({ ingId, measure: drinkData["strMeasure" + index] });
+        } else {
+          console.log("Not found in db " + ingName);
+        }
       }
-    }
-
-    if (drinkData.strIngredient2) {
-      ings[drinkData.strIngredient2] = drinkData.strMeasure2;
     }
     let drink = {
       name: drinkData.strDrink,
