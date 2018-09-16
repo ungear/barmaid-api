@@ -22,20 +22,25 @@ exports.getAllDrinks = function() {
 };
 
 exports.getAllDrinksFullData = async function() {
-  let allDrinkIds = await getAllDrinkIds();
-  let loader = asyncDrinkGenerator(allDrinkIds);
-  let allDrinks = [];
-  for await (let x of loader) {
-    if (x.success) allDrinks.push(x.data);
-    else console.log(x.error);
+  let allDrinkIdsResult = await getAllDrinkIds();
+  if (!allDrinkIdsResult.success) {
+    return { success: false, error: allDrinkIdsResult.error };
   }
-  return allDrinks;
+  console.log(`Grabber: got drinkIds ${allDrinkIdsResult.ids.length}`);
+  let loader = asyncDrinkGenerator(allDrinkIdsResult.ids);
+  let result = {
+    success: [],
+    failure: []
+  };
+  for await (let x of loader) {
+    if (x.success) result.success.push(x.data);
+    else result.failure.push(x.error);
+  }
+  return { success: true, data: result };
 };
 
 exports.getAllIngredients = function() {
-  return axios
-    .get(TARGET_URLS.getAllIngredients)
-    .then(resp => resp.data.drinks);
+  return axios.get(TARGET_URLS.getAllIngredients).then(resp => resp.data.drinks);
 };
 
 function getAllDrinkIds() {
@@ -43,11 +48,15 @@ function getAllDrinkIds() {
     axios.get(TARGET_URLS.getAllAlcoholic),
     axios.get(TARGET_URLS.getAllNonAlcoholic),
     axios.get(TARGET_URLS.getAllOptionalAlcoholic)
-  ]).then(d =>
-    [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks].map(
-      x => x.idDrink
-    )
-  );
+  ])
+    .then(d => ({
+      success: true,
+      ids: [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks].map(x => x.idDrink)
+    }))
+    .catch(e => ({
+      success: false,
+      error: e
+    }));
 }
 
 async function* asyncDrinkGenerator(ids) {
@@ -55,9 +64,13 @@ async function* asyncDrinkGenerator(ids) {
     let drinkUrl = TARGET_URLS.getDrinkById(ids.pop());
     yield await axios
       .get(drinkUrl)
-      .then(
-        response => ({ success: true, data: response.data.drinks[0] }),
-        e => ({ success: false, error: e })
-      );
+      .then(response => {
+        console.log("OK " + drinkUrl);
+        return { success: true, data: response.data.drinks[0] };
+      })
+      .catch(e => {
+        console.log("FAIL " + drinkUrl);
+        return { success: false, error: e };
+      });
   }
 }

@@ -1,4 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
+const ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
 const dbUrl = require("./dbConfig.js").DB_URL;
 const Schema = mongoose.Schema;
@@ -17,10 +18,6 @@ const DrinkScheme = new Schema({
       measure: String
     })
   ]
-  // ingredients: {
-  //   type: Map,
-  //   of: String
-  // }
 });
 const Drink = mongoose.model("drinks", DrinkScheme);
 
@@ -34,32 +31,39 @@ exports.upsertDrinks = async function(drinks) {
     dbUrl,
     { useNewUrlParser: true }
   );
-  let allIngredients = await Ingredient.find({});
-  let upsertPromises = drinks.map(drinkData => {
-    let ings = [];
+  let dbAllIngredients = [];
+  let upsertPromises = drinks.map(async sourceDrink => {
+    let dbDrinkIngredients = [];
     for (let index = 1; index <= 15; index++) {
-      let ingName = drinkData["strIngredient" + index];
-      if (ingName) {
-        let existingInredient = allIngredients.find(
-          x => x.ingredientName === ingName
-        );
+      let sourceDrinkIngName = sourceDrink["strIngredient" + index];
+      if (sourceDrinkIngName) {
+        let existingInredient = dbAllIngredients.find(x => x.ingredientName === sourceDrinkIngName);
+        let existingInredientId;
         if (existingInredient) {
-          let ingId = allIngredients.find(x => x.ingredientName === ingName)
-            ._id;
-          ings.push({ ingId, measure: drinkData["strMeasure" + index] });
+          existingInredientId = existingInredient._id;
         } else {
-          console.log("Not found in db " + ingName);
+          let newIng = {
+            ingredientName: sourceDrinkIngName,
+            _id: new ObjectID()
+          };
+          await Ingredient.create(newIng);
+          dbAllIngredients.push(newIng);
+          existingInredientId = newIng._id;
         }
+        dbDrinkIngredients.push({
+          ingId: existingInredientId,
+          measure: sourceDrink["strMeasure" + index]
+        });
       }
     }
     let drink = {
-      name: drinkData.strDrink,
-      id: drinkData.idDrink,
-      thumbImageUrl: drinkData.strDrinkThumb,
-      alcType: drinkData.strAlcoholic,
-      glass: drinkData.strGlass,
-      instructions: drinkData.strInstructions,
-      ingredients: ings
+      name: sourceDrink.strDrink,
+      id: sourceDrink.idDrink,
+      thumbImageUrl: sourceDrink.strDrinkThumb,
+      alcType: sourceDrink.strAlcoholic,
+      glass: sourceDrink.strGlass,
+      instructions: sourceDrink.strInstructions,
+      ingredients: dbDrinkIngredients
     };
     return Drink.update({ id: drink.id }, drink, { upsert: true });
   });
@@ -80,9 +84,7 @@ exports.getDrinkNames = function({ like }) {
     dbUrl,
     { useNewUrlParser: true }
   );
-  let query = like
-    ? Drink.find({ name: new RegExp(like, "i") }, "name")
-    : Drink.find({}, "name");
+  let query = like ? Drink.find({ name: new RegExp(like, "i") }, "name") : Drink.find({}, "name");
 
   return query
     .exec()
@@ -104,11 +106,9 @@ exports.upsertIngredients = function(ingredients) {
     let ingredient = {
       ingredientName: ingData.strIngredient1
     };
-    return Ingredient.update(
-      { ingredientName: ingredient.ingredientName },
-      ingredient,
-      { upsert: true }
-    );
+    return Ingredient.update({ ingredientName: ingredient.ingredientName }, ingredient, {
+      upsert: true
+    });
   });
 
   return Promise.all(upsertPromises)
