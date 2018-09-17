@@ -1,25 +1,9 @@
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
-const dbUrl = require("./dbConfig.js").DB_URL;
+const dbUrl = require("./dbConfig.js").DB_URL; //something like "mongodb://localhost:27017/awesomeDB" is expected
 const Schema = mongoose.Schema;
-
-const DrinkScheme = new Schema({
-  //id: ObjectId,
-  name: String,
-  id: Number,
-  thumbImageUrl: String,
-  alcType: String,
-  glass: String,
-  instructions: String,
-  ingredients: [
-    new Schema({
-      ingId: { type: mongoose.Schema.ObjectId, ref: "ingredients" },
-      measure: String
-    })
-  ]
-});
-const Drink = mongoose.model("drinks", DrinkScheme);
+const Drink = require("./models/drink.model").Drink;
 
 const IngredientScheme = new Schema({
   ingredientName: String
