@@ -3,6 +3,7 @@ const Router = require("koa-router");
 const mongoose = require("mongoose");
 const dbUrl = require("../db/dbConfig.js").DB_URL;
 const Drink = require("../db/models/drink.model").Drink;
+const Ingredient = require("../db/models/ingredient.model").Ingredient;
 
 mongoose.connect(
   dbUrl,
@@ -14,6 +15,10 @@ const router = new Router();
 
 router.get("/drinks", async function(ctx) {
   ctx.body = await Drink.find({});
+});
+
+router.get("/ingredients", async function(ctx) {
+  ctx.body = await Ingredient.find({});
 });
 
 router.get("/", async function(ctx) {
