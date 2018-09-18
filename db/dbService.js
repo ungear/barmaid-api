@@ -75,26 +75,3 @@ exports.getDrinkNames = function({ like }) {
       mongoose.disconnect();
     });
 };
-
-exports.upsertIngredients = function(ingredients) {
-  mongoose.connect(
-    dbUrl,
-    { useNewUrlParser: true }
-  );
-  let upsertPromises = ingredients.map(ingData => {
-    let ingredient = {
-      ingredientName: ingData.strIngredient1
-    };
-    return Ingredient.update({ ingredientName: ingredient.ingredientName }, ingredient, {
-      upsert: true
-    });
-  });
-
-  return Promise.all(upsertPromises)
-    .then(_ => {
-      mongoose.disconnect();
-    })
-    .catch(e => {
-      mongoose.disconnect();
-    });
-};
