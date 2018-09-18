@@ -13,10 +13,21 @@ mongoose.connect(
 const app = new Koa();
 const router = new Router();
 
+//drinks/name?like=beach
+router.get("/drinks/name", async function(ctx) {
+  let like = ctx.request.query.like;
+  ctx.body = await Drink.find({ name: new RegExp(like, "i") });
+});
+router.get("/drinks/:id", async function(ctx) {
+  ctx.body = await Drink.find({ id: ctx.params.id });
+});
 router.get("/drinks", async function(ctx) {
   ctx.body = await Drink.find({});
 });
 
+router.get("/ingredients/:id", async function(ctx) {
+  ctx.body = await Ingredient.findById(ctx.params.id);
+});
 router.get("/ingredients", async function(ctx) {
   ctx.body = await Ingredient.find({});
 });
