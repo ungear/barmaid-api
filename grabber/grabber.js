@@ -22,21 +22,27 @@ exports.getAllDrinks = function() {
 };
 
 exports.getAllDrinksFullData = async function() {
-  let allDrinkIdsResult = await getAllDrinkIds();
-  if (!allDrinkIdsResult.success) {
-    return { success: false, error: allDrinkIdsResult.error };
+  try {
+    let allDrinkIds = await getAllDrinkIds().catch(e => {
+      let error = new Error("failed to load drinkIds");
+      error.url = e.response.config.url;
+      error.status = e.response.status;
+      throw error;
+    });
+    console.log(`Grabber: got drinkIds ${allDrinkIds.length}`);
+    let loader = asyncDrinkGenerator([allDrinkIds[0]]);
+    let result = {
+      success: [],
+      failure: []
+    };
+    for await (let x of loader) {
+      if (x.success) result.success.push(x.data);
+      else result.failure.push(x.error);
+    }
+    return result;
+  } catch (e) {
+    throw e;
   }
-  console.log(`Grabber: got drinkIds ${allDrinkIdsResult.ids.length}`);
-  let loader = asyncDrinkGenerator(allDrinkIdsResult.ids);
-  let result = {
-    success: [],
-    failure: []
-  };
-  for await (let x of loader) {
-    if (x.success) result.success.push(x.data);
-    else result.failure.push(x.error);
-  }
-  return { success: true, data: result };
 };
 
 exports.getAllIngredients = function() {
@@ -48,15 +54,7 @@ function getAllDrinkIds() {
     axios.get(TARGET_URLS.getAllAlcoholic),
     axios.get(TARGET_URLS.getAllNonAlcoholic),
     axios.get(TARGET_URLS.getAllOptionalAlcoholic)
-  ])
-    .then(d => ({
-      success: true,
-      ids: [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks].map(x => x.idDrink)
-    }))
-    .catch(e => ({
-      success: false,
-      error: e
-    }));
+  ]).then(d => [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks].map(x => x.idDrink));
 }
 
 async function* asyncDrinkGenerator(ids) {
