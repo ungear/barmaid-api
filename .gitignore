@@ -61,5 +61,5 @@ typings/
 .next
 
 db/dbConfig.js
-failure-report
-source-drinks-data
+failure-report.json
+source-drinks-data.json

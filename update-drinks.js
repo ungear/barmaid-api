@@ -7,7 +7,7 @@ async function main() {
   try {
     let grabbeerResult = await grabber.getAllDrinksFullData();
 
-    if (!grabbeerResult.failure.length === 0) {
+    if (grabbeerResult.failure.length === 0) {
       await fs.writeFileSync("./source-drinks-data.json", JSON.stringify(grabbeerResult.success));
     }
 
