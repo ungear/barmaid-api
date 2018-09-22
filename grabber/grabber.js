@@ -30,7 +30,7 @@ exports.getAllDrinksFullData = async function() {
       throw error;
     });
     console.log(`Grabber: got drinkIds ${allDrinkIds.length}`);
-    let loader = asyncDrinkGenerator([allDrinkIds[0]]);
+    let loader = asyncDrinkGenerator(allDrinkIds);
     let result = {
       success: [],
       failure: []
