@@ -24,9 +24,9 @@ exports.upsertDrinks = async function(drinks) {
             ingredientName: sourceDrinkIngName,
             _id: new ObjectID()
           };
-          await Ingredient.create(newIng);
           dbAllIngredients.push(newIng);
           existingInredientId = newIng._id;
+          await Ingredient.create(newIng);
         }
         dbDrinkIngredients.push({
           ingId: existingInredientId,

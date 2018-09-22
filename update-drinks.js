@@ -6,7 +6,12 @@ async function main() {
   console.log("Getting drinks source data...");
   try {
     let grabbeerResult = await grabber.getAllDrinksFullData();
-    if (grabbeerResult.failure) {
+
+    if (!grabbeerResult.failure.length === 0) {
+      await fs.writeFileSync("./source-drinks-data.json", JSON.stringify(grabbeerResult.success));
+    }
+
+    if (grabbeerResult.failure.length) {
       await fs.writeFileSync("./failure-report.json", makeJsonFailureReport(grabbeerResult.failure));
     }
     console.log(
