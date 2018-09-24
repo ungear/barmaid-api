@@ -2,10 +2,12 @@ const grabber = require("./grabber/grabber.js");
 const dbService = require("./db/dbService.js");
 const fs = require("fs");
 
-async function main() {
+async function main(isTesting) {
   console.log("Getting drinks source data...");
   try {
-    let grabbeerResult = await grabber.getAllDrinksFullData();
+    let grabbeerResult = isTesting
+      ? { success: require("./source-drinks-data.json"), failure: [] }
+      : await grabber.getAllDrinksFullData();
 
     if (grabbeerResult.failure.length === 0) {
       await fs.writeFileSync("./source-drinks-data.json", JSON.stringify(grabbeerResult.success));
@@ -24,7 +26,7 @@ async function main() {
   }
 }
 
-main();
+main(false);
 
 const makeJsonFailureReport = errors =>
   JSON.stringify(
