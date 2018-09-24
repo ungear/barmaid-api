@@ -14,9 +14,13 @@ const app = new Koa();
 const router = new Router();
 
 //drinks/name?like=beach
-router.get("/drinks/name", async function(ctx) {
+router.get("/drinks/by-name", async function(ctx) {
   let like = ctx.request.query.like;
   ctx.body = await Drink.find({ name: new RegExp(like, "i") });
+});
+router.get("/drinks/by-ingredients", async function(ctx) {
+  let ingIds = ctx.request.query.ingIds.split(";").map(x => mongoose.Types.ObjectId(x));
+  ctx.body = await Drink.find({ ingredients: { $elemMatch: { ingId: { $in: ingIds } } } });
 });
 router.get("/drinks/:id", async function(ctx) {
   ctx.body = await Drink.find({ id: ctx.params.id });
