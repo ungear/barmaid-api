@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "grab": "node update-drinks.js",
+    "start": "node api/api.js"
   },
   "repository": {
     "type": "git",
