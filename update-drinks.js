@@ -21,6 +21,12 @@ async function main(isTesting) {
     );
     await dbService.upsertDrinks(grabbeerResult.success);
     console.log("Done");
+
+    console.log("Updating ingredients");
+    let ings = await dbService.getAllIngredients();
+    console.log(ings);
+    // fetch ingredient details
+    // save in db
   } catch (e) {
     console.log(e);
   }

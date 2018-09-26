@@ -57,18 +57,16 @@ exports.upsertDrinks = async function(drinks) {
     });
 };
 
-exports.getDrinkNames = function({ like }) {
+exports.getAllIngredients = function() {
   mongoose.connect(
     dbUrl,
     { useNewUrlParser: true }
   );
-  let query = like ? Drink.find({ name: new RegExp(like, "i") }, "name") : Drink.find({}, "name");
 
-  return query
-    .exec()
-    .then(results => {
+  return Ingredient.find()
+    .then(r => {
       mongoose.disconnect();
-      return results.map(x => x.name);
+      return r;
     })
     .catch(e => {
       mongoose.disconnect();
