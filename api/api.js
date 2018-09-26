@@ -13,15 +13,24 @@ mongoose.connect(
 const app = new Koa();
 const router = new Router();
 
-//drinks/name?like=beach
+// drinks/name?like=beach
 router.get("/drinks/by-name", async function(ctx) {
   let like = ctx.request.query.like;
   ctx.body = await Drink.find({ name: new RegExp(like, "i") });
 });
+
+// drinks/by-ingredients?ingIds=id1;id2;id3 ...
 router.get("/drinks/by-ingredients", async function(ctx) {
   let ingIds = ctx.request.query.ingIds.split(";").map(x => mongoose.Types.ObjectId(x));
-  ctx.body = await Drink.find({ ingredients: { $elemMatch: { ingId: { $in: ingIds } } } });
+  let ingredienConditions = ingIds.map(ingId => ({
+    "ingredients.ingId": ingId
+  }));
+
+  ctx.body = await Drink.find()
+    .and(ingredienConditions)
+    .exec();
 });
+
 router.get("/drinks/:id", async function(ctx) {
   ctx.body = await Drink.find({ id: ctx.params.id });
 });
@@ -37,7 +46,7 @@ router.get("/ingredients", async function(ctx) {
 });
 
 router.get("/", async function(ctx) {
-  ctx.body = { message: "Hello World!" };
+  ctx.body = router.stack.map(x => x.path);
 });
 
 app.use(router.routes()).use(router.allowedMethods());
