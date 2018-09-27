@@ -72,3 +72,18 @@ exports.getAllIngredients = function() {
       mongoose.disconnect();
     });
 };
+
+exports.updateIngredientsDetails = async function(ingsFullData) {
+  mongoose.connect(
+    dbUrl,
+    { useNewUrlParser: true }
+  );
+  for (let ing of ingsFullData) {
+    // find by id or name
+    //return something
+    await Ingredient.update(
+      { ingredientName: ing.strIngredient },
+      { description: ing.strDescription, type: ing.strType }
+    );
+  }
+};

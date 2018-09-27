@@ -23,10 +23,14 @@ async function main(isTesting) {
     console.log("Done");
 
     console.log("Updating ingredients");
-    let ings = await dbService.getAllIngredients();
-    console.log(ings);
-    // fetch ingredient details
-    // save in db
+    let dbIngs = await dbService.getAllIngredients();
+    let f = [dbIngs[0], dbIngs[1]];
+    let fullIngs = [];
+    for (dbIng of f) {
+      fullIngs.push(await grabber.getIngredientDetailsByName(dbIng.ingredientName));
+    }
+    console.log(fullIngs);
+    dbService.updateIngredientsDetails(fullIngs);
   } catch (e) {
     console.log(e);
   }
