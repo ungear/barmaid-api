@@ -14,18 +14,18 @@ const TARGET_URLS = {
 }
 
 // get drinks short data {id, name, thumbURL}
-exports.getAllDrinks = function() {
+export function getAllDrinks(): Promise<SourceDrinkModel[]> {
   return Promise.all([
     axios.get(TARGET_URLS.getAllAlcoholic),
     axios.get(TARGET_URLS.getAllNonAlcoholic),
     axios.get(TARGET_URLS.getAllOptionalAlcoholic)
   ]).then(d => [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks]);
-};
+}
 
-exports.getAllDrinksFullData = async function() {
+export async function getAllDrinksFullData(): Promise<DrinksGrabberResult> {
   try {
     let allDrinkIds = await getAllDrinkIds().catch(e => {
-      let error = new Error("failed to load drinkIds");
+      let error = new Error("failed to load drinkIds") as any;
       error.url = e.response.config.url;
       error.status = e.response.status;
       throw error;
@@ -44,15 +44,15 @@ exports.getAllDrinksFullData = async function() {
   } catch (e) {
     throw e;
   }
-};
+}
 
-exports.getAllIngredients = function() {
+export function getAllIngredients() {
   return axios.get(TARGET_URLS.getAllIngredients).then(resp => resp.data.drinks);
-};
+}
 
-exports.getIngredientDetailsByName = function(name) {
+export function getIngredientDetailsByName(name) {
   return axios.get(TARGET_URLS.getIngredientByName(name)).then(resp => resp.data.ingredients[0]);
-};
+}
 
 function getAllDrinkIds() {
   return Promise.all([
