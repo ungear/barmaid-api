@@ -4,7 +4,6 @@ const ObjectID = require("mongodb").ObjectID;
 const fs = require("fs");
 
 async function main(getDataFromJson) {
-  console.log("Getting drinks source data...");
   try {
     let sourceData = getDataFromJson ? require("./complete-source-data.json") : await fetchSourceData();
     await dbService.populateDb(sourceData);
