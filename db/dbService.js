@@ -4,86 +4,17 @@ const dbUrl = require("./dbConfig.js").DB_URL; //something like "mongodb://local
 const Drink = require("./models/drink.model").Drink;
 const Ingredient = require("./models/ingredient.model").Ingredient;
 
-exports.upsertDrinks = async function(drinks) {
+exports.populateDb = async function(data) {
   mongoose.connect(
     dbUrl,
     { useNewUrlParser: true }
   );
-  let dbAllIngredients = [];
-  let upsertPromises = drinks.map(async sourceDrink => {
-    let dbDrinkIngredients = [];
-    for (let index = 1; index <= 15; index++) {
-      let sourceDrinkIngName = sourceDrink["strIngredient" + index];
-      if (sourceDrinkIngName) {
-        let existingInredient = dbAllIngredients.find(x => x.ingredientName === sourceDrinkIngName);
-        let existingInredientId;
-        if (existingInredient) {
-          existingInredientId = existingInredient._id;
-        } else {
-          let newIng = {
-            ingredientName: sourceDrinkIngName,
-            _id: new ObjectID()
-          };
-          dbAllIngredients.push(newIng);
-          existingInredientId = newIng._id;
-          await Ingredient.create(newIng);
-        }
-        dbDrinkIngredients.push({
-          ingId: existingInredientId,
-          measure: sourceDrink["strMeasure" + index]
-        });
-      }
-    }
-    let drink = {
-      name: sourceDrink.strDrink,
-      id: sourceDrink.idDrink,
-      thumbImageUrl: sourceDrink.strDrinkThumb,
-      alcType: sourceDrink.strAlcoholic,
-      glass: sourceDrink.strGlass,
-      instructions: sourceDrink.strInstructions,
-      ingredients: dbDrinkIngredients
-    };
-    return Drink.update({ id: drink.id }, drink, { upsert: true });
-  });
-
-  return Promise.all(upsertPromises)
+  return Promise.all([Drink.create(data.drinks), Ingredient.create(data.ingredients)])
     .then(_ => {
-      debugger;
       mongoose.disconnect();
     })
     .catch(e => {
       console.error(e);
       mongoose.disconnect();
     });
-};
-
-exports.getAllIngredients = function() {
-  mongoose.connect(
-    dbUrl,
-    { useNewUrlParser: true }
-  );
-
-  return Ingredient.find()
-    .then(r => {
-      mongoose.disconnect();
-      return r;
-    })
-    .catch(e => {
-      mongoose.disconnect();
-    });
-};
-
-exports.updateIngredientsDetails = async function(ingsFullData) {
-  mongoose.connect(
-    dbUrl,
-    { useNewUrlParser: true }
-  );
-  for (let ing of ingsFullData) {
-    // find by id or name
-    //return something
-    await Ingredient.update(
-      { ingredientName: ing.strIngredient },
-      { description: ing.strDescription, type: ing.strType }
-    );
-  }
 };

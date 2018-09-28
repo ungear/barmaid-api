@@ -63,3 +63,4 @@ typings/
 db/dbConfig.js
 failure-report.json
 source-drinks-data.json
+complete-source-data.json

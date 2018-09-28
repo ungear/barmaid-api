@@ -1,42 +1,19 @@
 const grabber = require("./grabber/grabber.js");
 const dbService = require("./db/dbService.js");
+const ObjectID = require("mongodb").ObjectID;
 const fs = require("fs");
 
-async function main(isTesting) {
+async function main(getDataFromJson) {
   console.log("Getting drinks source data...");
   try {
-    let grabbeerResult = isTesting
-      ? { success: require("./source-drinks-data.json"), failure: [] }
-      : await grabber.getAllDrinksFullData();
-
-    if (grabbeerResult.failure.length === 0) {
-      await fs.writeFileSync("./source-drinks-data.json", JSON.stringify(grabbeerResult.success));
-    }
-
-    if (grabbeerResult.failure.length) {
-      await fs.writeFileSync("./failure-report.json", makeJsonFailureReport(grabbeerResult.failure));
-    }
-    console.log(
-      `Successfully got ${grabbeerResult.success.length} drinks. Failure ${grabbeerResult.failure.length}. Saving ...`
-    );
-    await dbService.upsertDrinks(grabbeerResult.success);
-    console.log("Done");
-
-    console.log("Updating ingredients");
-    let dbIngs = await dbService.getAllIngredients();
-    let f = [dbIngs[0], dbIngs[1]];
-    let fullIngs = [];
-    for (dbIng of f) {
-      fullIngs.push(await grabber.getIngredientDetailsByName(dbIng.ingredientName));
-    }
-    console.log(fullIngs);
-    dbService.updateIngredientsDetails(fullIngs);
+    let sourceData = getDataFromJson ? require("./complete-source-data.json") : await fetchSourceData();
+    await dbService.populateDb(sourceData);
   } catch (e) {
     console.log(e);
   }
 }
 
-main(false);
+main(true);
 
 const makeJsonFailureReport = errors =>
   JSON.stringify(
@@ -45,3 +22,63 @@ const makeJsonFailureReport = errors =>
       url: x.response.config.url
     }))
   );
+
+async function fetchSourceData() {
+  let grabbeerResult = await grabber.getAllDrinksFullData();
+  if (grabbeerResult.failure.length) {
+    console.log("Failed to load some drinks source data. See report.");
+    await fs.writeFileSync("./failure-report.json", makeJsonFailureReport(grabbeerResult.failure));
+  }
+
+  let d = extractFromSourceDrinksData(grabbeerResult.success);
+  for (let ing of d.ingredients) {
+    console.log("getting " + ing.ingredientName);
+    let ingDetails = await grabber
+      .getIngredientDetailsByName(ing.ingredientName)
+      .catch(e => ({ strDescription: null, strType: null }));
+    ing.description = ingDetails.strDescription;
+    ing.type = ingDetails.strType;
+  }
+  await fs.writeFileSync("./complete-source-data.json", JSON.stringify(sourceData));
+
+  return d;
+}
+
+function extractFromSourceDrinksData(sourceDrinks) {
+  let result = { drinks: [], ingredients: [] };
+
+  for (let sourceDrink of sourceDrinks) {
+    let dbDrinkIngredients = [];
+    for (let index = 1; index <= 15; index++) {
+      let sourceDrinkIngName = sourceDrink["strIngredient" + index];
+      if (sourceDrinkIngName) {
+        let existingInredient = result.ingredients.find(x => x.ingredientName === sourceDrinkIngName);
+        let existingInredientId;
+        if (existingInredient) {
+          existingInredientId = existingInredient._id;
+        } else {
+          let newIng = {
+            ingredientName: sourceDrinkIngName,
+            _id: new ObjectID()
+          };
+          result.ingredients.push(newIng);
+          existingInredientId = newIng._id;
+        }
+        dbDrinkIngredients.push({
+          ingId: existingInredientId,
+          measure: sourceDrink["strMeasure" + index]
+        });
+      }
+    }
+    result.drinks.push({
+      name: sourceDrink.strDrink,
+      _id: new ObjectID(),
+      thumbImageUrl: sourceDrink.strDrinkThumb,
+      alcType: sourceDrink.strAlcoholic,
+      glass: sourceDrink.strGlass,
+      instructions: sourceDrink.strInstructions,
+      ingredients: dbDrinkIngredients
+    });
+  }
+  return result;
+}
