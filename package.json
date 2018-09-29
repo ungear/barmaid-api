@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "grab": "node update-drinks.js",
+    "grab": "ts-node --files update-drinks.ts",
     "start": "node api/api.js"
   },
   "repository": {

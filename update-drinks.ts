@@ -12,7 +12,7 @@ async function main(getDataFromJson) {
   }
 }
 
-main(true);
+main(false);
 
 const makeJsonFailureReport = errors =>
   JSON.stringify(
@@ -38,7 +38,7 @@ async function fetchSourceData() {
     ing.description = ingDetails.strDescription;
     ing.type = ingDetails.strType;
   }
-  await fs.writeFileSync("./complete-source-data.json", JSON.stringify(d));
+  //await fs.writeFileSync("./complete-source-data.json", JSON.stringify(d));
 
   return d;
 }

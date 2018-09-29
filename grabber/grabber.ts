@@ -9,12 +9,11 @@ const TARGET_URLS = {
   getAllNonAlcoholic: [TARGET_API_BASE_URL, API_KEY, "filter.php?a=Non_Alcoholic"].join("/"),
   getAllOptionalAlcoholic: [TARGET_API_BASE_URL, API_KEY, "filter.php?a=Optional_alcohol"].join("/"),
   getDrinkById: (id) => `${TARGET_API_BASE_URL}/${API_KEY}/lookup.php?i=${id}`,
-  getAllIngredients: [TARGET_API_BASE_URL, API_KEY, "list.php?i=list"].join("/"),
   getIngredientByName: (name) => `${TARGET_API_BASE_URL}/${API_KEY}/search.php?i=${name}`,
 }
 
 // get drinks short data {id, name, thumbURL}
-export function getAllDrinks(): Promise<SourceDrinkModel[]> {
+export function getAllDrinks(): Promise<SourceDrinkShortModel[]> {
   return Promise.all([
     axios.get(TARGET_URLS.getAllAlcoholic),
     axios.get(TARGET_URLS.getAllNonAlcoholic),
@@ -32,7 +31,7 @@ export async function getAllDrinksFullData(): Promise<DrinksGrabberResult> {
     });
     console.log(`Grabber: got drinkIds ${allDrinkIds.length}`);
     let loader = asyncDrinkGenerator(allDrinkIds);
-    let result = {
+    let result: DrinksGrabberResult = {
       success: [],
       failure: []
     };
@@ -46,15 +45,11 @@ export async function getAllDrinksFullData(): Promise<DrinksGrabberResult> {
   }
 }
 
-export function getAllIngredients() {
-  return axios.get(TARGET_URLS.getAllIngredients).then(resp => resp.data.drinks);
-}
-
-export function getIngredientDetailsByName(name) {
+export function getIngredientDetailsByName(name): Promise<SourceIngredientModel> {
   return axios.get(TARGET_URLS.getIngredientByName(name)).then(resp => resp.data.ingredients[0]);
 }
 
-function getAllDrinkIds() {
+function getAllDrinkIds(): Promise<number[]> {
   return Promise.all([
     axios.get(TARGET_URLS.getAllAlcoholic),
     axios.get(TARGET_URLS.getAllNonAlcoholic),
@@ -62,7 +57,7 @@ function getAllDrinkIds() {
   ]).then(d => [...d[0].data.drinks, ...d[1].data.drinks, ...d[2].data.drinks].map(x => x.idDrink));
 }
 
-async function* asyncDrinkGenerator(ids) {
+async function* asyncDrinkGenerator(ids): AsyncIterableIterator<DrinkFetchingReport> {
   while (ids.length) {
     let drinkUrl = TARGET_URLS.getDrinkById(ids.pop());
     yield await axios

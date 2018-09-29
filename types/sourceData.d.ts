@@ -50,3 +50,16 @@ type SourceDrinkModel = {
   strMeasure15: String;
   strVideo: String;
 };
+
+type SourceDrinkShortModel = {
+  idDrink: String;
+  strDrink: String;
+  strDrinkThumb: String;
+};
+
+type SourceIngredientModel = {
+  idIngredient: String;
+  strDescription: String;
+  strIngredient: String;
+  strType: String;
+};
