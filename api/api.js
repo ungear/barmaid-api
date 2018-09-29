@@ -34,6 +34,37 @@ router.get("/drinks/by-ingredients", async function(ctx) {
 router.get("/drinks/:id", async function(ctx) {
   ctx.body = await Drink.find({ id: ctx.params.id });
 });
+
+router.get("/drinks/full/:id", async function(ctx) {
+  let drink = await Drink.findById(ctx.params.id).then(x => x.toJSON());
+  let ingIds = drink.ingredients.map(x => x.ingId);
+  let ingredients = await Ingredient.find({ _id: { $in: ingIds } });
+  drink.ingredients.forEach(ing => {
+    let linkedIngDetailed = ingredients.find(x => x._id.toJSON() === ing.ingId.toJSON());
+    ing.description = linkedIngDetailed ? linkedIngDetailed.description : null;
+    ing.name = linkedIngDetailed ? linkedIngDetailed.ingredientName : null;
+  });
+  // Get a drink and all linked ingredients
+  // Drawback - we have to pass the collection name ("ingredients" in code below), but we dont know it on this level
+  // let f = await Drink.aggregate([
+  //   {
+  //     $match: {
+  //       _id: ObjectID(ctx.params.id)
+  //     }
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "ingredients",
+  //       localField: "ingredients.ingId",
+  //       foreignField: "_id",
+  //       as: "ingredientsData"
+  //     }
+  //   }
+  // ]);
+
+  ctx.body = drink;
+});
+
 router.get("/drinks", async function(ctx) {
   ctx.body = await Drink.find({});
 });
