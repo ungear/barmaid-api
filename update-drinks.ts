@@ -51,13 +51,13 @@ function extractFromSourceDrinksData(sourceDrinks) {
     for (let index = 1; index <= 15; index++) {
       let sourceDrinkIngName = sourceDrink["strIngredient" + index];
       if (sourceDrinkIngName) {
-        let existingInredient = result.ingredients.find(x => x.ingredientName === sourceDrinkIngName);
+        let existingInredient = result.ingredients.find(x => x.ingredientName === sourceDrinkIngName.toLowerCase());
         let existingInredientId;
         if (existingInredient) {
           existingInredientId = existingInredient._id;
         } else {
           let newIng = {
-            ingredientName: sourceDrinkIngName,
+            ingredientName: sourceDrinkIngName.toLowerCase(),
             _id: new ObjectID()
           };
           result.ingredients.push(newIng);
