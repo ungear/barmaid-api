@@ -16,7 +16,7 @@ const router = new Router();
 // drinks/name?like=beach
 router.get("/drinks/by-name", async function(ctx) {
   let like = ctx.request.query.like;
-  ctx.body = await Drink.find({ name: new RegExp(like, "i") });
+  ctx.body = await Drink.find({ name: new RegExp(like, "i") }).sort({ name: 1 });
 });
 
 // drinks/by-ingredients?ingIds=id1;id2;id3 ...
@@ -28,6 +28,7 @@ router.get("/drinks/by-ingredients", async function(ctx) {
 
   ctx.body = await Drink.find()
     .and(ingredienConditions)
+    .sort({ name: 1 })
     .exec();
 });
 
@@ -66,14 +67,14 @@ router.get("/drinks/full/:id", async function(ctx) {
 });
 
 router.get("/drinks", async function(ctx) {
-  ctx.body = await Drink.find({});
+  ctx.body = await Drink.find({}).sort({ name: 1 });
 });
 
 router.get("/ingredients/:id", async function(ctx) {
   ctx.body = await Ingredient.findById(ctx.params.id);
 });
 router.get("/ingredients", async function(ctx) {
-  ctx.body = await Ingredient.find({});
+  ctx.body = await Ingredient.find({}).sort({ ingredientName: 1 });
 });
 
 router.get("/", async function(ctx) {
