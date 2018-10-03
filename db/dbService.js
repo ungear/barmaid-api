@@ -4,6 +4,10 @@ const dbUrl = require("./dbConfig.js").DB_URL; //something like "mongodb://local
 const Drink = require("./models/drink.model").Drink;
 const Ingredient = require("./models/ingredient.model").Ingredient;
 
+exports.dropDb = async function(data) {
+  return mongoose.createConnection(dbUrl, { useNewUrlParser: true }).dropDatabase();
+};
+
 exports.populateDb = async function(data) {
   mongoose.connect(
     dbUrl,

@@ -6,6 +6,7 @@ import * as fs from "fs";
 async function main(getDataFromJson) {
   try {
     let sourceData = getDataFromJson ? require("./complete-source-data.json") : await fetchSourceData();
+    await dbService.dropDb();
     await dbService.populateDb(sourceData);
   } catch (e) {
     console.log(e);
