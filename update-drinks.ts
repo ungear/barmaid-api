@@ -2,35 +2,23 @@ import * as grabber from "./grabber/grabber";
 import * as dbService from "./db/dbService.js";
 import { ObjectID } from "mongodb";
 import * as fs from "fs";
+import { SOURCE_DATA_PATH } from "./config.js";
+const SOURCE_DATA = require(SOURCE_DATA_PATH).default;
 
-async function main(getDataFromJson) {
+async function main() {
   try {
-    let sourceData = getDataFromJson ? require("./complete-source-data.json") : await fetchSourceData();
+    let dataSet = await fetchSourceData();
     await dbService.dropDb();
-    await dbService.populateDb(sourceData);
+    await dbService.populateDb(dataSet);
   } catch (e) {
     console.log(e);
   }
 }
 
-main(false);
-
-const makeJsonFailureReport = errors =>
-  JSON.stringify(
-    errors.map(x => ({
-      status: x.response.status,
-      url: x.response.config.url
-    }))
-  );
+main();
 
 async function fetchSourceData() {
-  let grabbeerResult = await grabber.getAllDrinksFullData();
-  if (grabbeerResult.failure.length) {
-    console.log("Failed to load some drinks source data. See report.");
-    await fs.writeFileSync("./failure-report.json", makeJsonFailureReport(grabbeerResult.failure));
-  }
-
-  let d = extractFromSourceDrinksData(grabbeerResult.success);
+  let d = extractFromSourceDrinksData(SOURCE_DATA);
   for (let ing of d.ingredients) {
     console.log("getting " + ing.ingredientName);
     let ingDetails = await grabber
@@ -39,8 +27,6 @@ async function fetchSourceData() {
     ing.description = ingDetails.strDescription;
     ing.type = ingDetails.strType;
   }
-  //await fs.writeFileSync("./complete-source-data.json", JSON.stringify(d));
-
   return d;
 }
 

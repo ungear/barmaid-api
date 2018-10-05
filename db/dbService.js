@@ -1,6 +1,6 @@
 const ObjectID = require("mongodb").ObjectID;
 const mongoose = require("mongoose");
-const dbUrl = require("./dbConfig.js").DB_URL; //something like "mongodb://localhost:27017/awesomeDB" is expected
+const dbUrl = require("../config").DB_URL; //something like "mongodb://localhost:27017/awesomeDB" is expected
 const Drink = require("./models/drink.model").Drink;
 const Ingredient = require("./models/ingredient.model").Ingredient;
 

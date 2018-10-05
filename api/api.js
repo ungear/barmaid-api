@@ -1,7 +1,7 @@
 const Koa = require("koa");
 const Router = require("koa-router");
 const mongoose = require("mongoose");
-const dbUrl = require("../db/dbConfig.js").DB_URL;
+const dbUrl = require("../config").DB_URL;
 const Drink = require("../db/models/drink.model").Drink;
 const Ingredient = require("../db/models/ingredient.model").Ingredient;
 
