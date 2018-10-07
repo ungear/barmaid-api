@@ -33,7 +33,7 @@ router.get("/drinks/by-ingredients", async function(ctx) {
 });
 
 router.get("/drinks/:id", async function(ctx) {
-  ctx.body = await Drink.find({ id: ctx.params.id });
+  ctx.body = await Drink.findById(ctx.params.id);
 });
 
 router.get("/drinks/full/:id", async function(ctx) {
