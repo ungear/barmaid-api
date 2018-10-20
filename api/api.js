@@ -21,6 +21,11 @@ router.get("/drinks/by-name", async function(ctx) {
 
 // drinks/by-ingredients?ingIds=id1;id2;id3 ...
 router.get("/drinks/by-ingredients", async function(ctx) {
+  if (!ctx.request.query.ingIds) {
+    ctx.status = 404;
+    ctx.body = "Wrong parametrs";
+    return;
+  }
   let ingIds = ctx.request.query.ingIds.split(";").map(x => mongoose.Types.ObjectId(x));
   let ingredienConditions = ingIds.map(ingId => ({
     "ingredients.ingId": ingId
