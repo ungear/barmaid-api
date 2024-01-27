@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as grabber from "./grabber/grabber";
 import * as dbService from "./db/dbService.js";
 import { ObjectID } from "mongodb";
