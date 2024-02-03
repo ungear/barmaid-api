@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AlcType {
+  Id    Int     @id @default(autoincrement())
+  Name  String  @db.VarChar(255)
+  Drink Drink[]
+}
+
+model Ingredient {
+  Id              Int               @id @default(autoincrement())
+  Name            String            @db.VarChar(255)
+  DrinkIngredient DrinkIngredient[]
+}
+
+model Drink {
+  Id              Int               @id @default(autoincrement())
+  Name            String            @db.VarChar(255)
+  AlcType         AlcType           @relation(fields: [AlcTypeId], references: [Id])
+  AlcTypeId       Int
+  Glass           String            @db.VarChar(255)
+  Instructions    String            @db.Text
+  ThumbImageUrl   String            @db.VarChar(1000)
+  DrinkIngredient DrinkIngredient[]
+}
+
+model DrinkIngredient {
+  Id           Int        @id @default(autoincrement())
+  Ingredient   Ingredient @relation(fields: [IngredientId], references: [Id])
+  IngredientId Int
+  Drink        Drink      @relation(fields: [DrinkId], references: [Id])
+  DrinkId      Int
+  Measure      String     @db.VarChar(255)
+}
