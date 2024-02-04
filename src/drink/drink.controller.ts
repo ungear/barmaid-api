@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { DrinkService } from './drink.service';
 
 @Controller('drink')
@@ -10,8 +10,13 @@ export class DrinkController {
     return this.drinkService.getAllDrinks();
   }
 
-  @Get(':id')
+  @Get('/search')
+  async searchDrinks(@Query('name') name: string): Promise<any> {
+    return this.drinkService.getDrinks(name);
+  }
+
+  @Get('/:id')
   async getDrinkById(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    return this.drinkService.getDrinkById(Number(id));
+    return this.drinkService.getDrinkById(id);
   }
 }

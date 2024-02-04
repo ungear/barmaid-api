@@ -16,4 +16,14 @@ export class DrinkService {
       },
     });
   }
+
+  getDrinks(name: string) {
+    return this.dbService.drink.findMany({
+      where: {
+        Name: {
+          contains: name,
+        },
+      },
+    });
+  }
 }
