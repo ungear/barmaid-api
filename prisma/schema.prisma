@@ -8,33 +8,33 @@ datasource db {
 }
 
 model AlcType {
-  Id    Int     @id @default(autoincrement())
-  Name  String  @db.VarChar(255)
-  Drink Drink[]
+  id    Int     @id @default(autoincrement())
+  name  String  @db.VarChar(255)
+  drink Drink[]
 }
 
 model Ingredient {
-  Id              Int               @id @default(autoincrement())
-  Name            String            @db.VarChar(255)
-  DrinkIngredient DrinkIngredient[]
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  drinkIngredient DrinkIngredient[]
 }
 
 model Drink {
-  Id              Int               @id @default(autoincrement())
-  Name            String            @db.VarChar(255)
-  AlcType         AlcType           @relation(fields: [AlcTypeId], references: [Id])
-  AlcTypeId       Int
-  Glass           String            @db.VarChar(255)
-  Instructions    String            @db.Text
-  ThumbImageUrl   String            @db.VarChar(1000)
-  DrinkIngredient DrinkIngredient[]
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  alcType         AlcType           @relation(fields: [alcTypeId], references: [id])
+  alcTypeId       Int
+  glass           String            @db.VarChar(255)
+  instructions    String            @db.Text
+  thumbImageUrl   String            @db.VarChar(1000)
+  drinkIngredient DrinkIngredient[]
 }
 
 model DrinkIngredient {
-  Id           Int        @id @default(autoincrement())
-  Ingredient   Ingredient @relation(fields: [IngredientId], references: [Id])
-  IngredientId Int
-  Drink        Drink      @relation(fields: [DrinkId], references: [Id])
-  DrinkId      Int
-  Measure      String?     @db.VarChar(255)
+  id           Int        @id @default(autoincrement())
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId Int
+  drink        Drink      @relation(fields: [drinkId], references: [id])
+  drinkId      Int
+  measure      String?     @db.VarChar(255)
 }

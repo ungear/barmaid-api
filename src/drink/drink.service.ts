@@ -12,7 +12,7 @@ export class DrinkService {
   getDrinkById(id: number) {
     return this.dbService.drink.findUnique({
       where: {
-        Id: id,
+        id,
       },
     });
   }
@@ -20,7 +20,7 @@ export class DrinkService {
   getDrinks(name: string) {
     return this.dbService.drink.findMany({
       where: {
-        Name: {
+        name: {
           contains: name,
         },
       },
