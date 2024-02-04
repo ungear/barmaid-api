@@ -36,5 +36,5 @@ model DrinkIngredient {
   IngredientId Int
   Drink        Drink      @relation(fields: [DrinkId], references: [Id])
   DrinkId      Int
-  Measure      String     @db.VarChar(255)
+  Measure      String?     @db.VarChar(255)
 }
