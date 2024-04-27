@@ -27,7 +27,7 @@ model Drink {
   glass           String            @db.VarChar(255)
   instructions    String            @db.Text
   thumbImageUrl   String            @db.VarChar(1000)
-  drinkIngredient DrinkIngredient[]
+  ingredients     DrinkIngredient[]
 }
 
 model DrinkIngredient {

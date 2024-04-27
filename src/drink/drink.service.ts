@@ -8,7 +8,7 @@ export class DrinkService {
   getAllDrinks() {
     return this.dbService.drink.findMany({
       include: {
-        drinkIngredient: true,
+        ingredients: true,
       },
     });
   }
@@ -19,7 +19,7 @@ export class DrinkService {
         id,
       },
       include: {
-        drinkIngredient: true,
+        ingredients: true,
       },
     });
   }
@@ -32,7 +32,7 @@ export class DrinkService {
         },
       },
       include: {
-        drinkIngredient: true,
+        ingredients: true,
       },
     });
   }
