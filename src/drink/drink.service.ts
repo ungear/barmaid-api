@@ -6,13 +6,20 @@ export class DrinkService {
   constructor(private dbService: DbService) {}
 
   getAllDrinks() {
-    return this.dbService.drink.findMany();
+    return this.dbService.drink.findMany({
+      include: {
+        drinkIngredient: true,
+      },
+    });
   }
 
   getDrinkById(id: number) {
     return this.dbService.drink.findUnique({
       where: {
         id,
+      },
+      include: {
+        drinkIngredient: true,
       },
     });
   }
@@ -23,6 +30,9 @@ export class DrinkService {
         name: {
           contains: name,
         },
+      },
+      include: {
+        drinkIngredient: true,
       },
     });
   }
