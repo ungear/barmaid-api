@@ -18,6 +18,15 @@ export class DrinkController {
     return this.drinkService.getDrinks(name);
   }
 
+  @Get('/search-by-ingredients')
+  @ApiOperation({ summary: 'Search drinks by name' })
+  async searchDrinksByIngredients(
+    @Query('ings') ingredients: string,
+  ): Promise<any> {
+    const ingIds = ingredients.split(',').map(Number);
+    return this.drinkService.getDrinksByIngredients(ingIds);
+  }
+
   @Get('/:id')
   @ApiOperation({ summary: 'Get a drink by id' })
   async getDrinkById(@Param('id', ParseIntPipe) id: number): Promise<any> {
