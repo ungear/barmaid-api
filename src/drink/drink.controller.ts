@@ -19,7 +19,7 @@ export class DrinkController {
   }
 
   @Get('/search-by-ingredients')
-  @ApiOperation({ summary: 'Search drinks by name' })
+  @ApiOperation({ summary: 'Search drinks containing ALL the ingredients in the provided list' })
   async searchDrinksByIngredients(
     @Query('ings') ingredients: string,
   ): Promise<any> {
