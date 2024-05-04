@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { SummaryService } from './summary.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { DrinksDataSummary } from 'src/entities/drinksDataSummary';
 
 @Controller('summary')
 export class SummaryController {
@@ -10,6 +11,7 @@ export class SummaryController {
 
   @Get('/count')
   @ApiOperation({ summary: 'Get total number of drinks and ingredients' })
+  @ApiOkResponse({ type: DrinksDataSummary })
   async getCount(): Promise<any> {
     if(this.summaryCache) return this.summaryCache;
 

@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
 import {ALC_TYPE_IDS} from "../hardcodedIds";
+import { DrinksDataSummary } from "src/entities/drinksDataSummary";
 
 @Injectable()
 export class SummaryService {
   constructor(private dbService: DbService) {}
 
-  async getSummary(){
+  async getSummary(): Promise<DrinksDataSummary>{
     const groupedDrinks = await this.dbService.drink.groupBy({
       by: ['alcTypeId'],
       _count: { id: true}
