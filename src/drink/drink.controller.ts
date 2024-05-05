@@ -31,6 +31,13 @@ export class DrinkController {
     return this.drinkService.getDrinksByIngredients(ingIds);
   }
 
+  @Get('/random')
+  @ApiOperation({ summary: 'Get `count` ramdon drinks' })
+  @ApiOkResponse({ type: [DrinkWithIngredients] })
+  async getRandomDrinks(@Query('count', ParseIntPipe) count: number): Promise<any> {
+    return this.drinkService.getRandomDrinks(count);
+  }
+
   @Get('/:id')
   @ApiOperation({ summary: 'Get a drink by id' })
   @ApiOkResponse({ type: DrinkWithIngredients })

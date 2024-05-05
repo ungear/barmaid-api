@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
+import { DrinkEntity } from 'src/entities/drink.entity';
 
 @Injectable()
 export class DrinkService {
@@ -67,4 +68,31 @@ export class DrinkService {
     })
     return drinksAnd;
   }
+
+  async getRandomDrinks(number: number){
+    // The right way would be executing something like this to get the random rows using MySql feature. 
+    //    const sql = Prisma.sql`SELECT * FROM barmaid.Drink
+    //    ORDER BY RAND()
+    //    LIMIT 5`
+    // But Prisma is currently not supporting such queries. So, below is a makeshift random picking.
+
+
+    const drinksCount = await this.dbService.drink.count();
+    const skip = randomNumber(0, drinksCount - number);
+    const columns: Array<keyof DrinkEntity> = ['name', 'glass', 'instructions', 'thumbImageUrl', 'alcTypeId', 'id'];
+    const randomColumnIndex = Math.floor(Math.random() * columns.length);
+    const randomOrderField = columns[randomColumnIndex];
+    return this.dbService.drink.findMany({
+      take: number,
+      skip,
+      include: {
+        ingredients: true,
+      },
+      orderBy: { [randomOrderField] : 'asc'}
+    });
+  }
+}
+
+function randomNumber(min: number, max: number){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
