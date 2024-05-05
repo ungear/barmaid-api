@@ -20,14 +20,16 @@ model Ingredient {
 }
 
 model Drink {
-  id              Int               @id @default(autoincrement())
-  name            String            @db.VarChar(255)
-  alcType         AlcType           @relation(fields: [alcTypeId], references: [id])
-  alcTypeId       Int
-  glass           String            @db.VarChar(255)
-  instructions    String            @db.Text
-  thumbImageUrl   String            @db.VarChar(1000)
-  ingredients     DrinkIngredient[]
+  id            Int               @id @default(autoincrement())
+  name          String            @db.VarChar(255)
+  alcType       AlcType           @relation(fields: [alcTypeId], references: [id])
+  alcTypeId     Int
+  glass         String            @db.VarChar(255)
+  instructions  String            @db.Text
+  thumbImageUrl String            @db.VarChar(1000)
+  ingredients   DrinkIngredient[]
+  imageSmall    String?            @db.VarChar(1000)
+  imageMedium   String?            @db.VarChar(1000)
 }
 
 model DrinkIngredient {
@@ -36,5 +38,5 @@ model DrinkIngredient {
   ingredientId Int
   drink        Drink      @relation(fields: [drinkId], references: [id])
   drinkId      Int
-  measure      String?     @db.VarChar(255)
+  measure      String?    @db.VarChar(255)
 }
