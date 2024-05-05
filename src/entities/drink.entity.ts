@@ -20,6 +20,12 @@ export class DrinkEntity implements Drink{
 
   @ApiProperty()
   thumbImageUrl: string;
+
+  @ApiProperty()
+  imageSmall: string;
+
+  @ApiProperty()
+  imageMedium: string;
 }
 
 export class DrinkWithIngredients implements Drink{
@@ -43,4 +49,10 @@ export class DrinkWithIngredients implements Drink{
 
   @ApiProperty({ type: [DrinkIngredientEntity] })
   ingredients: DrinkIngredientEntity[];
+
+  @ApiProperty()
+  imageSmall: string;
+
+  @ApiProperty()
+  imageMedium: string;
 }
