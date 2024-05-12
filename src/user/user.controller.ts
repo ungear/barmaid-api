@@ -1,7 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
 import { CreateUserDto, CreateUserResponseDto } from './dto';
 import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -15,4 +16,12 @@ export class UserController {
     const user = await this.userService.createUser(params);
     return {id: user.id, login: user.login};
   }
+
+    // TODO: remove the /protected endpoint
+    @UseGuards(JwtAuthGuard)
+    @Get('protected')
+    @ApiOperation({ summary: 'The endpoint to test authentication' })
+    getProfile(@Request() req) {
+      return req.user;
+    }
 }

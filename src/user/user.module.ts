@@ -6,6 +6,8 @@ import { UserService } from './user.service';
 import { PasswordService } from './password.service';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
+import { JWT_EXPIRATION, JWT_SECRET } from './authSettings';
 
 @Module({
   controllers: [AuthController, UserController],
@@ -13,10 +15,10 @@ import { JwtModule } from '@nestjs/jwt';
     DbModule,
     JwtModule.register({
       global: true,
-      secret: "JWT_SECRET",
-      signOptions: { expiresIn: '60s' },
+      secret: JWT_SECRET,
+      signOptions: { expiresIn: JWT_EXPIRATION },
     }),
   ],
-  providers: [UserService, PasswordService, AuthService],
+  providers: [UserService, PasswordService, AuthService, JwtStrategy],
 })
 export class UserModule {}

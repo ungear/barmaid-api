@@ -23,3 +23,7 @@ export class LoginDto{
   @ApiProperty()
   password: string;
 }
+
+export class JwtPayload {
+  userId: number;
+}

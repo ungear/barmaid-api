@@ -1,5 +1,5 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { LoginDto } from './dto';
+import { JwtPayload, LoginDto } from './dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
@@ -16,7 +16,7 @@ export class AuthController {
     if(!user) return 'auth failed';
     
 
-    const payload = { sub: user.id };
+    const payload: JwtPayload = { userId: user.id };
     const resp = {
       access_token: await this.jwtService.signAsync(payload),
     };
