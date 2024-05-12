@@ -28,8 +28,8 @@ model Drink {
   instructions  String            @db.Text
   thumbImageUrl String            @db.VarChar(1000)
   ingredients   DrinkIngredient[]
-  imageSmall    String?            @db.VarChar(1000)
-  imageMedium   String?            @db.VarChar(1000)
+  imageSmall    String?           @db.VarChar(1000)
+  imageMedium   String?           @db.VarChar(1000)
 }
 
 model DrinkIngredient {
@@ -39,4 +39,11 @@ model DrinkIngredient {
   drink        Drink      @relation(fields: [drinkId], references: [id])
   drinkId      Int
   measure      String?    @db.VarChar(255)
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  login String @db.VarChar(255)
+  hash  String @db.VarChar(255)
+  salt  String @db.VarChar(255)
 }
