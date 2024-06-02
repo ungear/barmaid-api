@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { JwtPayload, LoginDto } from './dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -13,7 +13,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   async login(@Body() params: LoginDto) {
     const user = await this.authService.validateUser(params.login, params.password);
-    if(!user) return 'auth failed';
+    if(!user) throw new UnauthorizedException();
     
 
     const payload: JwtPayload = { userId: user.id };
