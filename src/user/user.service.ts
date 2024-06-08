@@ -24,4 +24,8 @@ export class UserService {
   findByLogin(login: string){
     return this.dbService.user.findFirst({where: { login: login}})
   }
+  
+  findById(id: number){
+    return this.dbService.user.findUnique({where: {id}})
+  }
 }

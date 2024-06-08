@@ -17,11 +17,20 @@ export class UserController {
     return {id: user.id, login: user.login};
   }
 
-    // TODO: remove the /protected endpoint
-    @UseGuards(JwtAuthGuard)
-    @Get('protected')
-    @ApiOperation({ summary: 'The endpoint to test authentication' })
-    getProfile(@Request() req) {
-      return req.user;
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('current')
+  @ApiOperation({ summary: 'Get the current user info' })
+  @ApiOkResponse({type: CreateUserResponseDto})
+  async getCurrentUser(@Request() req): Promise<CreateUserResponseDto> {
+    const user = await this.userService.findById(req.user.userId);
+    return {id: user.id, login: user.login};
+  }
+
+  // TODO: remove the /protected endpoint
+  @UseGuards(JwtAuthGuard)
+  @Get('protected')
+  @ApiOperation({ summary: 'The endpoint to test authentication' })
+  getProfile(@Request() req) {
+    return req.user;
+  }
 }
