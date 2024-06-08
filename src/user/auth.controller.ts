@@ -21,11 +21,11 @@ export class AuthController {
     const payload: JwtPayload = { userId: user.id };
     const signedJwt = await this.jwtService.signAsync(payload);
 
-    response.cookie(COOKIE_NAME, signedJwt, {
+    response.cookie(COOKIE_NAME, "signedJwt", {
       httpOnly: true,
       maxAge: COOKIE_MAX_AGE_MS, 
       domain: COOKIE_DOMAIN,
-      sameSite: "none",
+      sameSite: true,
     });
   }
 }
