@@ -8,4 +8,4 @@ export const COOKIE_NAME="barmaid-auth"
 
 export const COOKIE_MAX_AGE_MS=AUTH_SESSION_LIFETIME_S*1000;
 
-export const COOKIE_DOMAIN="ungear.net";
+export const COOKIE_DOMAIN="barmaid.ungear.net";
