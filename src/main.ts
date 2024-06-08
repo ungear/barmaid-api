@@ -13,7 +13,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
-  app.enableCors();
+  app.enableCors({
+    origin: ["http://localhost:8080", "https://barmaid.ungear.net"], 
+    credentials: true,
+  });
   app.use(cookieParser());
   await app.listen(3001);
 }
