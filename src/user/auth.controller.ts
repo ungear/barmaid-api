@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UnauthorizedException, Res } from '@nestjs/common';
 import {Response} from "express";
-import { JwtPayload, LoginDto } from './dto';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { CreateUserResponseDto, JwtPayload, LoginDto } from './dto';
+import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { COOKIE_DOMAIN, COOKIE_MAX_AGE_MS, COOKIE_NAME } from './authSettings';
@@ -13,7 +13,11 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Sign in' })
   @ApiBody({ type: LoginDto })
-  async login(@Body() params: LoginDto, @Res({ passthrough: true }) response: Response) {
+  @ApiOkResponse({type: CreateUserResponseDto})
+  async login(
+    @Body() params: LoginDto, 
+    @Res({ passthrough: true }) response: Response
+  ) : Promise<CreateUserResponseDto> {
     const user = await this.authService.validateUser(params.login, params.password);
     if(!user) throw new UnauthorizedException();
     
