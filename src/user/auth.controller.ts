@@ -28,5 +28,7 @@ export class AuthController {
       sameSite: "none",
       secure: true,
     });
+
+    return {id: user.id, login: user.login};
   }
 }
