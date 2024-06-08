@@ -4,7 +4,7 @@ import { JwtPayload, LoginDto } from './dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { COOKIE_MAX_AGE_MS, COOKIE_NAME } from './authSettings';
+import { COOKIE_DOMAIN, COOKIE_MAX_AGE_MS, COOKIE_NAME } from './authSettings';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +24,7 @@ export class AuthController {
     response.cookie(COOKIE_NAME, signedJwt, {
       httpOnly: true,
       maxAge: COOKIE_MAX_AGE_MS, 
+      domain: COOKIE_DOMAIN,
     });
   }
 }
