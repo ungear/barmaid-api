@@ -25,6 +25,7 @@ export class AuthController {
       httpOnly: true,
       maxAge: COOKIE_MAX_AGE_MS, 
       domain: COOKIE_DOMAIN,
+      sameSite: "none",
     });
   }
 }
