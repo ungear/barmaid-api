@@ -1,4 +1,4 @@
-export const AUTH_SESSION_LIFETIME_S = 60;
+export const AUTH_SESSION_LIFETIME_S = 60*60*24; //24 hours
 
 export const JWT_SECRET="JWT_SECRET"
 
